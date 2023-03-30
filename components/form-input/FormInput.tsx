@@ -10,11 +10,13 @@ import {Box, Input, Text} from "native-base";
 interface Props extends UseControllerProps {
   placeholder?: string;
   type?: "text" | "password";
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }
 
 const FormInput: React.FC<Props> = ({
   placeholder,
   type = "text",
+  autoCapitalize = "none",
   ...rest
 }: Props) => {
   const formContext = useFormContext();
@@ -41,6 +43,7 @@ const FormInput: React.FC<Props> = ({
         onBlur={onBlur}
         onChangeText={onChange}
         value={value}
+        autoCapitalize={autoCapitalize}
       />
       {errorMessage && (
         <Text color="danger.600" mx="2.5">
