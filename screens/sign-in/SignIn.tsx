@@ -9,9 +9,12 @@ import {
 } from "react-hook-form";
 import FormInput from "../../components/form-input/FormInput";
 import {useNavigation} from "@react-navigation/native";
-import {AppNavProp} from "../../navigators/AppNavigator";
 import {EMAIL_VALIDATION_REGEX} from "../../config/config";
 import i18n from "../../i18n/i18n";
+import { useStore } from "../../store/RootStore";
+import { observer } from "mobx-react-lite";
+import { getAuthTimestamp } from "../../utils/DateUtils";
+import { LoggedOutNavProp } from "../../navigators/LoggedOutNavigator";
 
 type FormData = {
   email: string;
@@ -19,7 +22,8 @@ type FormData = {
 };
 
 const SignIn = () => {
-  const {navigate} = useNavigation<AppNavProp>();
+  const { navigate } = useNavigation<LoggedOutNavProp>();
+  const { authStore } = useStore();
   const {handleSubmit, formState, ...methods} = useForm<FormData>({
     defaultValues: {
       email: "",
@@ -29,15 +33,15 @@ const SignIn = () => {
 
   const {errors} = formState;
 
-  // const submit = () => {
-  //   navigate("Home");
-  // };
-
   const onSignUp = () => {
     navigate("SignUp");
   };
 
-  const onSubmit: SubmitHandler<FormData> = data => console.log({data});
+  const onSubmit: SubmitHandler<FormData> = data => {
+    console.log({ data })
+    const key = getAuthTimestamp();
+    authStore.login(key);
+  };
 
   const onError: SubmitErrorHandler<FormData> = (errors, e) => {
     return console.log(errors);
@@ -72,6 +76,7 @@ const SignIn = () => {
                 message: i18n.t("auth.email.invalid"),
               },
             }}
+            autoCapitalize="none"
           />
           <FormInput
             name="password"
@@ -116,4 +121,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default observer(SignIn);
